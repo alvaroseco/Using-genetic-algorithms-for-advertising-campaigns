@@ -1,6 +1,6 @@
 # Using-genetic-algorithms-for-advertising-campaigns
 
-This repository contains the files related to the paper 'Using genetic algorithms for advertising campaigns', carried out by Álvaro Seco, Natalia López y Fernando Rubio.
+This repository contains the files related to the paper 'Using genetic algorithms for advertising campaigns', carried out by Álvaro Seco, Natalia López and Fernando Rubio.
 
 The study of these algorithms was carried out in the Python language and in the Anaconda spyder environment.
 
