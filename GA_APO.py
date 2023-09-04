@@ -32,7 +32,7 @@ def yetToBeCovered(chromosome):
     return yetToBeCovered_total
 
 #It calculates the cost
-def calculate_cos(chromosome):
+def calculate_cost(chromosome):
     cost = 0
     for i in range(n_media):
         if chromosome[i] == 1:
