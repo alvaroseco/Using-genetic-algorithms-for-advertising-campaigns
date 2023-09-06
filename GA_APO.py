@@ -65,10 +65,27 @@ def fitness(population):
     return population
 
 #Uniform crossing
-def crossover(chromosome1, chromosome2):
+def uniform_crossover(chromosome1, chromosome2):
     chromosome_new = []
     for i in range(n_media):
         chromosome_new.append(random.choice([chromosome1[i], chromosome2[i]]))
+    return chromosome_new
+
+#One-Point crossing
+def one_point_crossover(chromosome1, chromosome2):
+    n = len(chromosome1)
+    point_of_crossover = random.randint(1, n - 1)
+
+    chromosome_new = chromosome1[:point_of_crossover] + chromosome2[point_of_crossover:]
+    return chromosome_new
+    
+#Two-Point crossing
+def two_point_crossover(chromosome1, chromosome2):
+    n = len(chromosome1)
+    point1 = random.randint(1, n - 2)
+    point2 = random.randint(point1 + 1, n - 1)
+
+    chromosome_new = chromosome1[:point1] + chromosome2[point1:point2] + chromosome1[point2:]
     return chromosome_new
 
 #We create the roulette that we will use for the crossing
@@ -76,8 +93,8 @@ roulette = []
 for k in range(0,population_size):
     roulette += [k]*(population_size-k)
 
-#Selection and crossing it's applied
-def selection_and_crossing(population):
+#Roulette selection and crossing it's applied
+def roulette_selection_and_crossing(population):
     previous_fittest=[]
     for i in range(n_media):
         previous_fittest.append(population[0][i])
@@ -88,7 +105,48 @@ def selection_and_crossing(population):
     #CROSSING
     chromosomes_new_list= []        
     for j in range(n_chromosomes_for_reproduction//2): 
-        chromosome_new = crossover(population[order[2*j]], population[order[2*j+1]])
+        chromosome_new = uniform_crossover(population[order[2*j]], population[order[2*j+1]])
+        chromosomes_new_list.append(chromosome_new)
+    for _ in range(n_chromosomes_for_reproduction//2):
+        population.pop() #We eliminate the worst of the population
+    population += chromosomes_new_list 
+    population = fitness(population)
+    return population, previous_fittest
+
+#Truncation selection and crossing it's applied
+def truncation_selection_and_crossing(population):
+    previous_fittest=[]
+    for i in range(n_media):
+        previous_fittest.append(population[0][i])
+    #SELECTION
+    order = range((population_size//2)+1)
+    #CROSSING
+    chromosomes_new_list= []        
+    for j in range(n_chromosomes_for_reproduction//2): 
+        chromosome_new = uniform_crossover(population[order[2*j]], population[order[2*j+1]])
+        chromosomes_new_list.append(chromosome_new)
+    for _ in range(n_chromosomes_for_reproduction//2):
+        population.pop() #We eliminate the worst of the population
+    population += chromosomes_new_list 
+    population = fitness(population)
+    return population, previous_fittest
+
+#Tournament selection and crossing it's applied
+def tournament_selection_and_crossing(population):
+    previous_fittest=[]
+    for i in range(n_media):
+        previous_fittest.append(population[0][i])
+    #SELECTION
+    order=[]
+    for _ in range(n_chromosomes_for_reproduction):
+        batch = [random.choice(population‎) for _ in range(int(0.1*population_size)]
+        best_in_batch = max(map(calculate_cost, batch))
+        order.append(batch.index(best_in_batch))
+    
+    #CROSSING
+    chromosomes_new_list= []        
+    for j in range(n_chromosomes_for_reproduction//2): 
+        chromosome_new = uniform_crossover(population[order[2*j]], population[order[2*j+1]])
         chromosomes_new_list.append(chromosome_new)
     for _ in range(n_chromosomes_for_reproduction//2):
         population.pop() #We eliminate the worst of the population
@@ -117,7 +175,7 @@ population = create_initial_population()
 population = fitness(population)
 
 for i in range(iterations):
-    population, previous_fittest = selection_and_crossing(population)
+    population, previous_fittest = roulette_selection_and_crossing(population)
     population = mutation(population, previous_fittest)
     
 print(population[0])
